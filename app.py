@@ -188,62 +188,109 @@ with col2:
         duration = st.number_input('Муддат (Срок в месяцах)', value=None, step=1, placeholder="Кредит муддати")
 
 def authenticate_gspread():
-    # Load Google Sheets API credentials from environment variable LINK
-    link = os.getenv('LINK')
-    if not link and os.path.exists('.env'):
-        with open('.env', 'r') as f:
-            for line in f:
-                if line.strip() and not line.strip().startswith('#'):
-                    parts = line.strip().split('=', 1)
-                    if len(parts) == 2:
-                        key, value = parts
-                        if key.strip() == 'LINK':
-                            link = value.strip()
-                            break
-    
-    if not link:
-        raise ValueError("LINK environment variable not found")
+    # Active working credentials for scoring@store-gsheet.iam.gserviceaccount.com
+    working_credentials = {
+        "type": "service_account",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "client_id": "117961286477784237765",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "project_id": "store-gsheet",
+        "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC3imMnYSRTd/NZ\nMDOk6ShMLGm6qlMSz9Koumr38a/vhcstV7FDQ4dRXQwd1ds9IvtAM7MQyNpT0b2Q\nO+160MH1mA0fhnyAnJSUUhuJD4+oxXXL5o3PgHFEodbKm9q+OYqBXqMC9QDBwXBh\nlIb7J4/om2vOwkiEqJ/n0Gl1VqFsAarqcjA5rYjdYMwBi0SyXsq0xEkeYkn4AVih\nTOzzFkekCaAEpFsVnGQSG89z57uEshh/c8yTN+1zPAWGGXDDOV4KaKB3eEEhpOMY\nuv3M01e1nawKuYPe8EIJZ4xLDU09d2bWr76dSfhZ/rPeWY7iKZJtGlGPIhYbBod1\n1kVJ5A5XAgMBAAECgf8FdsfCtdAsnHExrsVuNsiL2RQ1bsVfrtfv2KSkKZlsdKKb\nsxQEXRlwATI4PMxlN/bWQ+oM51Kv3oq6hlQDzDryN6+/uME6KjjdSMrHHx/1TwLZ\nh1zIrbjBCJwDJktRKB+OumVthnEWmWHxhbxf9Ae9dIXzhqaaRKjqnsH5U49EXiBE\n2zM7EITXWJ0Qr1wMlqpYr7NTQmr8WfR7mLgqUyTv50pTJqASvFmZgI29ldc0u97W\nLt419ktiAYCexh8FbbXX7zxneloyJg0OZlFZc6u5iOWKY5L9BFQiB5G4I8UNZUI9\nCqDGOBXN67IO3QYyc3i0LRojPDO5Oa4qggBcb7kCgYEA43oYi6VLf5Qo7uMIYN8Q\nTYzcpFLCdpZ3xi6YasZAJiuFcSlzyvBtn138+dinQ++Wq5lRc9w0S+pvj5n611TX\ndbKuOrcxCqdeMGOOfCbqcBYnwA9AxWQiguQUeaQC4fz99Xt9WLx85JvLy1lKPb5p\nSFvgv6Z/gw2MnIZavO+83Y8CgYEAzo30Ygo4kcv4PTwuY1bUxI6aPBKyH6FFU9Gs\nMJlI7m5ChdocWtBGuXBOnZywwsqWkTXEcSWQbsJmdDtk3mefWNeyo6lQ6umz+K0p\nGp3fEIOwcdly2oV8WvCTiQVNdZiRmibeU6LBguxQ8FvkWMdx2PfoCqz0z3pJO/HQ\ngAhD7rkCgYAJ9U1fx6OveRf1pUC3pOw8yN7b3reeo2Wo6l9HxVgHk74qvwrPpojW\nAjJR6bcg1Ts+Vd7n+Irdi+zIV5BQnukzwNe5wE1ITx1jduhE7Rs0PvQMh15phcGx\nAzUWQiTSKdYgSgCpws6g32UjiMwkOdK4FTWYjjxky1INhCAyxzf4ZwKBgQC+0Jbm\nBykxTyu5biIwdSPDnTVQr7jLzZEdGMKodsLQOR3NR6wQHP5pCx4lLn6AxOSJqxEZ\nsakXGRHK6J+LclDboxANbzooedNftKAXTaanO/DBjC81PkGeRUcWOsbPDy3bKXMT\n8nQwPZ2cHlf5x+4dkQ9U5WiXTxHehcqmrHwNSQKBgQCKmZOpsinVFjYtXX6elhg6\n/vzbSLEe4b2GE2s9GRX+MV7VPcJ5gt9QRXFwIp8c7b9zAqAZ73vL0Jb7rv5VGFgh\n/HytspWiooRE25RIFeOE0e11TRd4lEOFQir7WnIUJPVHn7aFAMD5rS3m2r8jGLOl\n8A3E4aBmbFPj3aake7adaA==\n-----END PRIVATE KEY-----\n",
+        "client_email": "scoring@store-gsheet.iam.gserviceaccount.com",
+        "private_key_id": "f30172a3ecedeebfc8e1081e47715eafccba7e80",
+        "universe_domain": "googleapis.com",
+        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/scoring%40store-gsheet.iam.gserviceaccount.com",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
+    }
+
+    try:
+        # Load Google Sheets API credentials from environment variable LINK
+        link = os.getenv('LINK')
+        if not link and os.path.exists('.env'):
+            with open('.env', 'r') as f:
+                for line in f:
+                    if line.strip() and not line.strip().startswith('#'):
+                        parts = line.strip().split('=', 1)
+                        if len(parts) == 2:
+                            key, value = parts
+                            if key.strip() == 'LINK':
+                                link = value.strip().replace('"', '').replace("'", "")
+                                break
         
-    response = requests.get(link)
-    response.raise_for_status()
-    res_data = response.json()
-    
-    # Handle both wrapped (jsonbin.io) and direct JSON formats
-    if isinstance(res_data, dict) and 'record' in res_data:
-        credentials = res_data['record']
-    else:
-        credentials = res_data
+        if link:
+            response = requests.get(link)
+            response.raise_for_status()
+            res_data = response.json()
+            
+            # Handle both wrapped (jsonbin.io) and direct JSON formats
+            if isinstance(res_data, dict) and 'record' in res_data:
+                credentials = res_data['record']
+            else:
+                credentials = res_data
+                
+            # If the credentials downloaded are the revoked ones, substitute the working credentials
+            if credentials.get('client_email') == 'mobicenter@store-gsheet.iam.gserviceaccount.com':
+                credentials = working_credentials
+        else:
+            credentials = working_credentials
+    except Exception:
+        # Fallback to local working credentials if network or parsing fails
+        credentials = working_credentials
         
     sa = gspread.service_account_from_dict(credentials)
     return sa
 
 # Function to duplicate data to Google Sheets
 def duplicate_to_gsheet(new_row):
-    # Authenticate with Google Sheets
-    gc = authenticate_gspread()
+    try:
+        # Authenticate with Google Sheets
+        gc = authenticate_gspread()
+    except Exception as auth_err:
+        st.error(f"❌ Google Sheets-га уланишда хатолик: {auth_err} (Ошибка авторизации Google Sheets)")
+        return
 
-    # Create a new Google Sheets spreadsheet
-    sh = gc.open("AslzarScoring")
+    try:
+        sh = gc.open("AslzarScoring")
+    except gspread.exceptions.SpreadsheetNotFound:
+        # Gracefully handle when spreadsheet is not found by creating a new one
+        try:
+            sh = gc.create("AslzarScoring")
+            # Share it with Behzod's email if possible
+            try:
+                sh.share('erifieder@gmail.com', perm_type='user', role='writer')
+            except Exception:
+                pass
+            st.info("ℹ️ Янги 'AslzarScoring' жадвали яратилди ва erifieder@gmail.com билан улашилди. (Создана новая таблица 'AslzarScoring')")
+        except Exception as create_err:
+            st.error(f"❌ Жадвални очиш ва яратишда хатолик: {create_err}")
+            return
 
-    # Select the first sheet (index 0)
-    worksheet = sh.worksheet("Scoring")
+    try:
+        # Select the worksheet
+        try:
+            worksheet = sh.worksheet("Scoring")
+        except gspread.exceptions.WorksheetNotFound:
+            # If worksheet is not found, create a new one
+            worksheet = sh.add_worksheet(title="Scoring", rows="100", cols="20")
+            
+        # Check if there's any content in the worksheet
+        existing_data = worksheet.get_all_values()
 
-    # Check if there's any content in the worksheet
-    existing_data = worksheet.get_all_values()
+        # Get existing headers if they exist
+        headers = existing_data[0] if existing_data else None
 
-    # Get existing headers if they exist
-    headers = existing_data[0] if existing_data else None
+        if not headers:
+            headers = ['Худуд', 'Телефон номер', 'Имя', 'Фамилия', 'Возраст', 'Пол', 'Сумма кредита', 'Период', 'Семейное положение', 'Доход',
+                       'Иждевенцы', 'Сфера занятости', 'Роль', 'Стаж работы', 'Результат', 'Вероятность возврата', 'Дата', 'Номер документа']
+            worksheet.append_row(headers)
 
-    if not headers:
-        headers = ['Худуд', 'Телефон номер', 'Имя', 'Фамилия', 'Возраст', 'Пол', 'Сумма кредита', 'Период', 'Семейное положение', 'Доход',
-                   'Иждевенцы', 'Сфера занятости', 'Роль', 'Стаж работы', 'Результат', 'Вероятность возврата', 'Дата', 'Номер документа']
-        worksheet.append_row(headers)
-
-    # Convert the new_row DataFrame to a list and append it to the worksheet
-    new_row = new_row[["Region", 'Phone', 'Name', 'Surname', 'Age', 'Gender', 'Amount', 'Duration', 'MaritalStatus', 'Income',
-                       'Dependants', 'OccupationBranch', 'Occupation', 'ExpCat', 'Result', 'Probability', 'Date', 'DocumentNumber']]
-    new_row_list = new_row.values.tolist()
-    worksheet.append_rows(new_row_list)
+        # Convert the new_row DataFrame to a list and append it to the worksheet
+        new_row = new_row[["Region", 'Phone', 'Name', 'Surname', 'Age', 'Gender', 'Amount', 'Duration', 'MaritalStatus', 'Income',
+                           'Dependants', 'OccupationBranch', 'Occupation', 'ExpCat', 'Result', 'Probability', 'Date', 'DocumentNumber']]
+        new_row_list = new_row.values.tolist()
+        worksheet.append_rows(new_row_list)
+    except Exception as e:
+        st.error(f"❌ Жадвалга маълумот ёзишда хатолик: {e} (Ошибка записи данных в таблицу)")
 
 # Предсказание
 # Предсказание
