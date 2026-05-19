@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import joblib
 import gspread
+import os
+import requests
 # Загрузка модели
 model = joblib.load('gboost_pipeline_2.0.pkl')
 import pdfkit
@@ -134,8 +136,33 @@ occupation = st.sidebar.selectbox(r'$\textsf{\normalsize Лавозими}$', ['
 exp_cat = st.sidebar.selectbox(r'$\textsf{\normalsize Иш тажрибаси}$', ['3 йилдан 5 гача', '5 йилдан зиёд', '1 йилдан 3 гача', '1 йилдан кам', 'Тажрибаси йук'])
 
 def authenticate_gspread():
-    # Load Google Sheets API credentials
-    sa = gspread.service_account(filename='credits_mobi.json')
+    # Load Google Sheets API credentials from environment variable LINK
+    link = os.getenv('LINK')
+    if not link and os.path.exists('.env'):
+        with open('.env', 'r') as f:
+            for line in f:
+                if line.strip() and not line.strip().startswith('#'):
+                    parts = line.strip().split('=', 1)
+                    if len(parts) == 2:
+                        key, value = parts
+                        if key.strip() == 'LINK':
+                            link = value.strip()
+                            break
+    
+    if not link:
+        raise ValueError("LINK environment variable not found")
+        
+    response = requests.get(link)
+    response.raise_for_status()
+    res_data = response.json()
+    
+    # Handle both wrapped (jsonbin.io) and direct JSON formats
+    if isinstance(res_data, dict) and 'record' in res_data:
+        credentials = res_data['record']
+    else:
+        credentials = res_data
+        
+    sa = gspread.service_account_from_dict(credentials)
     return sa
 
 # Function to duplicate data to Google Sheets
