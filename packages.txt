@@ -1,1 +1,1 @@
-wkhtmltopdf
+# No system packages needed

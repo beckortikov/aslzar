@@ -6,111 +6,85 @@ import os
 import requests
 # Загрузка модели
 model = joblib.load('gboost_pipeline_2.0.pkl')
-import pdfkit
+from fpdf import FPDF
+
+def download_font_if_not_exists(font_name, url):
+    if not os.path.exists(font_name):
+        try:
+            r = requests.get(url)
+            r.raise_for_status()
+            with open(font_name, 'wb') as f:
+                f.write(r.content)
+        except Exception as e:
+            st.error(f"Error downloading font: {e}")
+
 # Функция для генерации PDF
 from datetime import datetime
 def generate_pdf(data, document_number, date):
-    rendered = f'''
-    <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Client Request</title>
-</head>
-
-<body>
-    <div class="container">
-        <br><br>
-        <h4 class="text-center"><strong>Документ</strong></h4>
-        <br><br>
-        <table class="table table-bordered">
-            <tbody>
-                <tr>
-                    <td style="width: 50%;">Имя</td>
-                    <td style="width: 50%;">{data['Name'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Фамилия</td>
-                    <td style="width: 50%;">{data['Surname'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Телефон номер</td>
-                    <td style="width: 50%;">{data['Phone'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Ёши</td>
-                    <td style="width: 50%;">{data['Age'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Жинси</td>
-                    <td style="width: 50%;">{data['Gender'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Сумма</td>
-                    <td style="width: 50%;">{data['Amount'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Муддат</td>
-                    <td style="width: 50%;">{data['Age'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Оилавий статус</td>
-                    <td style="width: 50%;">{data['MaritalStatus'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Даромади</td>
-                    <td style="width: 50%;">{data['Income'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Карамогидагилар сони</td>
-                    <td style="width: 50%;">{data['Dependants'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Иш сохаси</td>
-                    <td style="width: 50%;">{data['OccupationBranch'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Лавозими</td>
-                    <td style="width: 50%;">{data['Occupation'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Иш тажрибаси</td>
-                    <td style="width: 50%;">{data['ExpCat'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Скоринг резултати</td>
-                    <td style="width: 50%;">{data['Result'][0]}</td>
-                </tr>
-                <tr>
-                    <td style="width: 50%;">Кайтариш эхтимоли</td>
-                    <td style="width: 50%;">{data['Probability'][0]}</td>
-                </tr>
-            </tbody>
-        </table>
-
-   <br><br><br><br>
-        <tr>
-            <td colspan="2" style="text-align: right;">Дата {datetime.strptime(date,'%Y-%m-%d %H:%M:%S').date()}</td>
-        </tr>
-        </t>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <tr>
-            <td colspan="2" style="text-align: right;">Подпись: ______________________</td>
-    <br>
-    <tr>
-        <td colspan="2" style="text-align: right;">Уникальный номер документа: {document_number}</td>
-    </tr>
-    </div>
-    </body>
-
-    </html>
-    '''
-    pdfkit.from_string(rendered, 'result.pdf', options={'encoding': 'utf-8'})
+    # Download fonts if they are not already cached locally
+    download_font_if_not_exists('Roboto-Regular.ttf', 'https://github.com/googlefonts/roboto/raw/main/src/hinted/Roboto-Regular.ttf')
+    download_font_if_not_exists('Roboto-Bold.ttf', 'https://github.com/googlefonts/roboto/raw/main/src/hinted/Roboto-Bold.ttf')
+    
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Add fonts to the PDF builder
+    pdf.add_font("Roboto", "", "Roboto-Regular.ttf")
+    pdf.add_font("Roboto", "B", "Roboto-Bold.ttf")
+    
+    # Document Header
+    pdf.set_font("Roboto", "B", 16)
+    pdf.cell(0, 10, "Документ", ln=True, align="C")
+    pdf.ln(10)
+    
+    # Set up styling for the table
+    pdf.set_font("Roboto", "", 11)
+    
+    table_data = [
+        ("Имя", str(data['Name'][0])),
+        ("Фамилия", str(data['Surname'][0])),
+        ("Телефон номер", str(data['Phone'][0])),
+        ("Ёши", str(data['Age'][0])),
+        ("Жинси", str(data['Gender'][0])),
+        ("Сумма", str(data['Amount'][0])),
+        ("Муддат", str(data['Duration'][0] if 'Duration' in data else data['Age'][0])),
+        ("Оилавий статус", str(data['MaritalStatus'][0])),
+        ("Даромади", str(data['Income'][0])),
+        ("Карамогидагилар сони", str(data['Dependants'][0])),
+        ("Иш сохаси", str(data['OccupationBranch'][0])),
+        ("Лавозими", str(data['Occupation'][0])),
+        ("Иш тажрибаси", str(data['ExpCat'][0])),
+        ("Скоринг резултати", str(data['Result'][0])),
+        ("Кайтариш эхтимоли", str(data['Probability'][0])),
+    ]
+    
+    # Calculate widths
+    col_width = pdf.epw / 2
+    line_height = pdf.font_size * 2
+    
+    # Render table
+    for label, val in table_data:
+        # Bold label
+        pdf.set_font("Roboto", "B", 11)
+        pdf.cell(col_width, line_height, label, border=1)
+        # Regular value
+        pdf.set_font("Roboto", "", 11)
+        pdf.cell(col_width, line_height, val, border=1, ln=True)
+        
+    pdf.ln(15)
+    
+    # Date, Signature, Unique ID
+    formatted_date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S').date()
+    pdf.set_font("Roboto", "", 11)
+    pdf.cell(0, 8, f"Дата: {formatted_date}", ln=True, align="R")
+    pdf.cell(0, 8, "Подпись: ______________________", ln=True, align="R")
+    pdf.cell(0, 8, f"Уникальный номер документа: {document_number}", ln=True, align="R")
+    
+    pdf.output("result.pdf")
+    
     with open("result.pdf", "rb") as pdf_file:
         PDFbyte = pdf_file.read()
-
+        
     st.download_button(label="Export_Report",
                        data=PDFbyte,
                        file_name="test.pdf",
