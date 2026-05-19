@@ -91,23 +91,69 @@ def generate_pdf(data, document_number, date):
                        mime='application/octet-stream')
 
 # Ввод данных с использованием инпутов
-st.title('Модель скоринга')
-region = st.sidebar.selectbox(r'$\textsf{\normalsize Худуд}$', ["Andijon", "Farg'ona", "Marg'ilon", "Yangiqurg'on",
-                                        "Namangan", "Uychi", "Chortoq", "Samarqand", "Qarshi"])
-name = st.sidebar.text_input(r'$\textsf{\normalsize Исм}$', '')
-surname = st.sidebar.text_input(r'$\textsf{\normalsize Фамилия}$', '')
-phone = st.sidebar.number_input(r'$\textsf{\normalsize Телефон номер}$', value=None, step=1, placeholder="Номер теринг")
-age = st.sidebar.number_input(r'$\textsf{\normalsize Ёш}$', value=None, step=1)
-gender = st.sidebar.radio(r'$\textsf{\normalsize Жинси}$', ['Эркак', 'Аёл'])
-amount = st.sidebar.number_input(r'$\textsf{\normalsize Сумма}$', value=None, step=1, placeholder="Товар нархи")
-duration = st.sidebar.number_input(r'$\textsf{\normalsize Муддат}$', value=None, step=1, placeholder="Кредит муддати")
-marital_status = st.sidebar.selectbox(r'$\textsf{\normalsize Оилавий статус}$', ['Оилали', 'Уйланмаган/Турмуш курмаган', 'Ажрашган', 'Бошка'])
-income = st.sidebar.number_input(r'$\textsf{\normalsize Даромади}$', value=None, step=1, placeholder="Ойлик даромади")
-dependants = st.sidebar.selectbox(r'$\textsf{\normalsize Карамогидагилар сони}$', [0, 1, 2, 3, 4, 5])
-occupation_branch = st.sidebar.selectbox(r'$\textsf{\normalsize Иш сохаси}$', ['Ишлаб чикариш', 'Бошка соха', 'Савдо', 'Банк сохаси', 'Харбий', 'Таълим сохаси', 'Логистика', 'Кишлок хужалиги', 'Медицина сохаси',
-                                                                        'Курилиш сохаси', 'ЖКХ', 'Пенсионер'])
-occupation = st.sidebar.selectbox(r'$\textsf{\normalsize Лавозими}$', ['Оддий ишчи', 'Юкори малакали мутхассис', 'Пенсионер/Студент', 'Бошлиг/Хужаин'])
-exp_cat = st.sidebar.selectbox(r'$\textsf{\normalsize Иш тажрибаси}$', ['3 йилдан 5 гача', '5 йилдан зиёд', '1 йилдан 3 гача', '1 йилдан кам', 'Тажрибаси йук'])
+st.set_page_config(page_title="Модель скоринга Aslzar", page_icon="📊", layout="wide")
+
+st.markdown("""
+    <style>
+    .main-header {
+        text-align: center;
+        color: #1E3A8A;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+    .section-header {
+        color: #2563EB;
+        font-weight: 600;
+        border-bottom: 2px solid #DBEAFE;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+    }
+    .stButton>button {
+        background: linear-gradient(90deg, #2563EB 0%, #1D4ED8 100%);
+        color: white !important;
+        font-weight: bold;
+        padding: 12px 24px;
+        border-radius: 8px;
+        border: none;
+        width: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+    .stButton>button:hover {
+        background: linear-gradient(90deg, #1D4ED8 0%, #1E40AF 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown("<h1 class='main-header'>📊 Модель скоринга Aslzar</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #4B5563; font-size: 16px; margin-top: -15px;'>Заполните анкету клиента для автоматического расчета скорингового балла</p>", unsafe_allow_html=True)
+st.markdown("---")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("<h3 class='section-header'>👤 Шахсий маълумотлар (Личные данные)</h3>", unsafe_allow_html=True)
+    name = st.text_input('Исм (Имя)', '')
+    surname = st.text_input('Фамилия', '')
+    phone = st.number_input('Телефон номер', value=None, step=1, placeholder="998901234567")
+    age = st.number_input('Ёш (Возраст)', value=None, step=1)
+    gender = st.radio('Жинси (Пол)', ['Эркак', 'Аёл'], horizontal=True)
+    marital_status = st.selectbox('Оилавий статус (Семейное положение)', ['Оилали', 'Уйланмаган/Турмуш курмаган', 'Ажрашган', 'Бошка'])
+    dependants = st.selectbox('Карамогидагилар сони (Количество иждивенцев)', [0, 1, 2, 3, 4, 5])
+
+with col2:
+    st.markdown("<h3 class='section-header'>💼 Иш ва Даромад (Работа и доходы)</h3>", unsafe_allow_html=True)
+    occupation_branch = st.selectbox('Иш сохаси (Сфера занятости)', ['Ишлаб чикариш', 'Савдо', 'Банк сохаси', 'Харбий', 'Таълим сохаси', 'Логистика', 'Кишлок хужалиги', 'Медицина сохаси', 'Курилиш сохаси', 'ЖКХ', 'Пенсионер', 'Бошка соха'])
+    occupation = st.selectbox('Лавозими (Должность)', ['Оддий ишчи', 'Юкори малакали мутхассис', 'Пенсионер/Студент', 'Бошлиг/Хужаин'])
+    exp_cat = st.selectbox('Иш тажрибаси (Стаж работы)', ['3 йилдан 5 гача', '5 йилдан зиёд', '1 йилдан 3 гача', '1 йилдан кам', 'Тажрибаси йук'])
+    income = st.number_input('Даромади (Месячный доход)', value=None, step=1, placeholder="Ойлик даромади")
+    
+    st.markdown("<h3 class='section-header'>💰 Кредит тафсилотлари (Детали кредита)</h3>", unsafe_allow_html=True)
+    region = st.selectbox('Худуд (Регион)', ["Andijon", "Farg'ona", "Marg'ilon", "Yangiqurg'on", "Namangan", "Uychi", "Chortoq", "Samarqand", "Qarshi"])
+    amount = st.number_input('Сумма (Сумма кредита)', value=None, step=1, placeholder="Товар нархи")
+    duration = st.number_input('Муддат (Срок в месяцах)', value=None, step=1, placeholder="Кредит муддати")
 
 def authenticate_gspread():
     # Load Google Sheets API credentials from environment variable LINK
@@ -168,42 +214,61 @@ def duplicate_to_gsheet(new_row):
     worksheet.append_rows(new_row_list)
 
 # Предсказание
-if st.sidebar.button('Получить скоринг'):
-    current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    document_number = f'Doc_{current_date.replace(" ", "_").replace(":", "_")}'
-
-    input_data = pd.DataFrame({
-        'Age': [age],
-        'Gender': [1 if gender == 'Мужской' else 0],
-        'Amount': [amount],
-        'Duration': [duration],
-        'MaritalStatus': [marital_status],
-        'Income': [income],
-        'Dependants': [dependants],
-        'OccupationBranch': [occupation_branch],
-        'Occupation': [occupation],
-        'ExpCat': [exp_cat]
-    })
-
-    prediction = model.predict_proba(input_data)[:, 0]
-    st.subheader('Результат:')
-    st.write(f'Кредит кайтариш эхтимоли: {round(prediction[0]*100, 2)}%')
-    input_data['Region'] = region
-    input_data['Name'] = name
-    input_data['Surname'] = surname
-    input_data['Phone'] = phone
-    input_data['Result'] = 'Одобрено' if prediction > 1 - 0.06 else 'Отказано'
-    input_data['Gender'] = gender
-    input_data['Probability'] = f'{round(prediction[0]*100, 2)}%'
-    input_data['Date'] = current_date
-    input_data['DocumentNumber'] = document_number
-
-    if prediction > 1 - 0.06:
-        st.success(r'$\textsf{\Large Кредит тасдикланди! 🎉}$')
-        st.balloons()
-        duplicate_to_gsheet(input_data)
+# Предсказание
+st.markdown("<br>", unsafe_allow_html=True)
+if st.button('🚀 Получить скоринг'):
+    if not name or not surname or phone is None or age is None or amount is None or duration is None or income is None:
+        st.warning("⚠️ Илтимос, барча майдонларни тўлдиринг! (Пожалуйста, заполните все поля!)")
     else:
-        st.error(r'$\textsf{\Large Рад этилди. 😞}$')
-        duplicate_to_gsheet(input_data)
+        current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        document_number = f'Doc_{current_date.replace(" ", "_").replace(":", "_")}'
 
-    generate_pdf(input_data, document_number, current_date)
+        input_data = pd.DataFrame({
+            'Age': [age],
+            'Gender': [1 if gender == 'Эркак' else 0],
+            'Amount': [amount],
+            'Duration': [duration],
+            'MaritalStatus': [marital_status],
+            'Income': [income],
+            'Dependants': [dependants],
+            'OccupationBranch': [occupation_branch],
+            'Occupation': [occupation],
+            'ExpCat': [exp_cat]
+        })
+
+        prediction = model.predict_proba(input_data)[:, 0]
+        prob_val = round(prediction[0]*100, 2)
+        is_approved = prediction[0] > (1 - 0.06)
+
+        st.markdown("---")
+        st.markdown("<h3 style='color: #1E3A8A; font-weight: 700;'>🎯 Натижа (Результат скоринга)</h3>", unsafe_allow_html=True)
+        
+        res_col1, res_col2 = st.columns(2)
+        with res_col1:
+            st.metric(label="Кайтариш эхтимоли (Вероятность возврата)", value=f"{prob_val}%")
+            
+        with res_col2:
+            if is_approved:
+                st.success("🎉 КРЕДИТ ТАСДИКЛАНДИ! (ОДОБРЕНО)")
+                st.balloons()
+            else:
+                st.error("😞 РАД ЭТИЛДИ! (ОТКАЗАНО)")
+
+        # Prepare final input data for saving/PDF
+        input_data['Region'] = region
+        input_data['Name'] = name
+        input_data['Surname'] = surname
+        input_data['Phone'] = phone
+        input_data['Result'] = 'Одобрено' if is_approved else 'Отказано'
+        input_data['Gender'] = gender
+        input_data['Probability'] = f'{prob_val}%'
+        input_data['Date'] = current_date
+        input_data['DocumentNumber'] = document_number
+
+        # Duplicate to Google Sheets
+        duplicate_to_gsheet(input_data)
+        
+        # Generate PDF and provide download button
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color: #4B5563;'>📥 Документни юклаб олиш (Скачать отчет)</h4>", unsafe_allow_html=True)
+        generate_pdf(input_data, document_number, current_date)
