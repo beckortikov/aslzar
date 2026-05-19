@@ -99,7 +99,8 @@ st.markdown("""
         text-align: center;
         color: #1E3A8A;
         font-weight: 800;
-        margin-bottom: 20px;
+        font-size: 26px;
+        margin-bottom: 10px;
     }
     .section-header {
         color: #2563EB;
