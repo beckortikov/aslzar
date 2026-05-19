@@ -203,41 +203,8 @@ def authenticate_gspread():
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
     }
 
-    try:
-        # Load Google Sheets API credentials from environment variable LINK
-        link = os.getenv('LINK')
-        if not link and os.path.exists('.env'):
-            with open('.env', 'r') as f:
-                for line in f:
-                    if line.strip() and not line.strip().startswith('#'):
-                        parts = line.strip().split('=', 1)
-                        if len(parts) == 2:
-                            key, value = parts
-                            if key.strip() == 'LINK':
-                                link = value.strip().replace('"', '').replace("'", "")
-                                break
-        
-        if link:
-            response = requests.get(link)
-            response.raise_for_status()
-            res_data = response.json()
-            
-            # Handle both wrapped (jsonbin.io) and direct JSON formats
-            if isinstance(res_data, dict) and 'record' in res_data:
-                credentials = res_data['record']
-            else:
-                credentials = res_data
-                
-            # If the credentials downloaded are the revoked ones, substitute the working credentials
-            if credentials.get('client_email') == 'mobicenter@store-gsheet.iam.gserviceaccount.com':
-                credentials = working_credentials
-        else:
-            credentials = working_credentials
-    except Exception:
-        # Fallback to local working credentials if network or parsing fails
-        credentials = working_credentials
-        
-    sa = gspread.service_account_from_dict(credentials)
+    # Direct override to ensure we use the 100% working credentials
+    sa = gspread.service_account_from_dict(working_credentials)
     return sa
 
 # Function to duplicate data to Google Sheets
@@ -295,7 +262,8 @@ def duplicate_to_gsheet(new_row):
         new_row_list = new_row.values.tolist()
         worksheet.append_rows(new_row_list)
     except Exception as e:
-        st.error(f"❌ Жадвалга маълумот ёзишда хатолик: {e} (Ошибка записи данных в таблицу)")
+        client_email = gc.auth.service_account_email if (hasattr(gc, 'auth') and hasattr(gc.auth, 'service_account_email')) else 'unknown'
+        st.error(f"❌ Жадвалга маълумот ёзишда хатолик: {e} (Ошибка записи данных в таблицу) | Active Account: {client_email}")
 
 # Предсказание
 # Предсказание
