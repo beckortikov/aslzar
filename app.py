@@ -131,6 +131,9 @@ st.markdown("<h1 class='main-header'>📊 Модель скоринга Aslzar</
 st.markdown("<p style='text-align: center; color: #4B5563; font-size: 16px; margin-top: -15px;'>Заполните анкету клиента для автоматического расчета скорингового балла</p>", unsafe_allow_html=True)
 st.markdown("---")
 
+# Placeholder to display scoring results and PDF download button at the very top of the page
+result_placeholder = st.empty()
+
 col1, col2 = st.columns(2)
 
 with col1:
@@ -292,20 +295,6 @@ if st.button('🚀 Получить скоринг'):
         prob_val = round(prediction[0]*100, 2)
         is_approved = prediction[0] > (1 - 0.06)
 
-        st.markdown("---")
-        st.markdown("<h3 style='color: #1E3A8A; font-weight: 700;'>🎯 Натижа (Результат скоринга)</h3>", unsafe_allow_html=True)
-        
-        res_col1, res_col2 = st.columns(2)
-        with res_col1:
-            st.metric(label="Кайтариш эхтимоли (Вероятность возврата)", value=f"{prob_val}%")
-            
-        with res_col2:
-            if is_approved:
-                st.success("🎉 КРЕДИТ ТАСДИКЛАНДИ! (ОДОБРЕНО)")
-                st.balloons()
-            else:
-                st.error("😞 РАД ЭТИЛДИ! (ОТКАЗАНО)")
-
         # Prepare final input data for saving/PDF
         input_data['Region'] = region
         input_data['Name'] = name
@@ -320,7 +309,30 @@ if st.button('🚀 Получить скоринг'):
         # Duplicate to Google Sheets
         duplicate_to_gsheet(input_data)
         
-        # Generate PDF and provide download button
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("<h4 style='color: #4B5563;'>📥 Документни юклаб олиш (Скачать отчет)</h4>", unsafe_allow_html=True)
-        generate_pdf(input_data, document_number, current_date)
+        # Display the scoring result beautifully inside the placeholder at the top of the page
+        with result_placeholder.container():
+            st.markdown("""
+            <div style='background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); padding: 20px; border-radius: 12px; border: 1px solid #BFDBFE; margin-bottom: 25px;'>
+                <h3 style='color: #1E3A8A; font-weight: 700; margin-top: 0; margin-bottom: 5px; text-align: center;'>🎯 Скоринг Натижаси (Результат скоринга)</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            res_card_col1, res_card_col2 = st.columns([3, 2])
+            
+            with res_card_col1:
+                if is_approved:
+                    st.success("🎉 **КРЕДИТ ТАСДИКЛАНДИ! (ОДОБРЕНО)**")
+                    st.balloons()
+                else:
+                    st.error("😞 **РАД ЭТИЛДИ! (ОТКАЗАНО)**")
+                
+                st.metric(label="Кайтариш эхтимоли (Вероятность возврата)", value=f"{prob_val}%")
+                
+            with res_card_col2:
+                st.markdown("<h4 style='color: #1E3A8A; margin-top: 0; font-weight: 600; text-align: center;'>📥 Ҳисоботни юклаб олиш (Скачать отчет)</h4>", unsafe_allow_html=True)
+                # Centering container for the button
+                st.markdown("<div style='display: flex; justify-content: center; margin-top: 15px;'>", unsafe_allow_html=True)
+                generate_pdf(input_data, document_number, current_date)
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+            st.markdown("<hr style='border: 1.5px solid #3B82F6; margin-bottom: 25px;'>", unsafe_allow_html=True)
