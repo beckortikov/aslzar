@@ -135,25 +135,57 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("<h3 class='section-header'>👤 Шахсий маълумотлар (Личные данные)</h3>", unsafe_allow_html=True)
-    name = st.text_input('Исм (Имя)', '')
-    surname = st.text_input('Фамилия', '')
-    phone = st.number_input('Телефон номер', value=None, step=1, placeholder="998901234567")
-    age = st.number_input('Ёш (Возраст)', value=None, step=1)
-    gender = st.radio('Жинси (Пол)', ['Эркак', 'Аёл'], horizontal=True)
-    marital_status = st.selectbox('Оилавий статус (Семейное положение)', ['Оилали', 'Уйланмаган/Турмуш курмаган', 'Ажрашган', 'Бошка'])
+    
+    # Имя и Фамилия рядом
+    sub_col1, sub_col2 = st.columns(2)
+    with sub_col1:
+        name = st.text_input('Исм (Имя)', '')
+    with sub_col2:
+        surname = st.text_input('Фамилия', '')
+        
+    # Телефон номер и Возраст рядом
+    sub_col3, sub_col4 = st.columns(2)
+    with sub_col3:
+        phone = st.number_input('Телефон номер', value=None, step=1, placeholder="998901234567")
+    with sub_col4:
+        age = st.number_input('Ёш (Возраст)', value=None, step=1)
+        
+    # Пол и Семейное положение рядом
+    sub_col5, sub_col6 = st.columns(2)
+    with sub_col5:
+        gender = st.radio('Жинси (Пол)', ['Эркак', 'Аёл'], horizontal=True)
+    with sub_col6:
+        marital_status = st.selectbox('Оилавий статус (Семейное положение)', ['Оилали', 'Уйланмаган/Турмуш курмаган', 'Ажрашган', 'Бошка'])
+        
     dependants = st.selectbox('Карамогидагилар сони (Количество иждивенцев)', [0, 1, 2, 3, 4, 5])
 
 with col2:
     st.markdown("<h3 class='section-header'>💼 Иш ва Даромад (Работа и доходы)</h3>", unsafe_allow_html=True)
-    occupation_branch = st.selectbox('Иш сохаси (Сфера занятости)', ['Ишлаб чикариш', 'Савдо', 'Банк сохаси', 'Харбий', 'Таълим сохаси', 'Логистика', 'Кишлок хужалиги', 'Медицина сохаси', 'Курилиш сохаси', 'ЖКХ', 'Пенсионер', 'Бошка соха'])
-    occupation = st.selectbox('Лавозими (Должность)', ['Оддий ишчи', 'Юкори малакали мутхассис', 'Пенсионер/Студент', 'Бошлиг/Хужаин'])
-    exp_cat = st.selectbox('Иш тажрибаси (Стаж работы)', ['3 йилдан 5 гача', '5 йилдан зиёд', '1 йилдан 3 гача', '1 йилдан кам', 'Тажрибаси йук'])
-    income = st.number_input('Даромади (Месячный доход)', value=None, step=1, placeholder="Ойлик даромади")
+    
+    # Сфера занятости и Должность рядом
+    sub_col7, sub_col8 = st.columns(2)
+    with sub_col7:
+        occupation_branch = st.selectbox('Иш сохаси (Сфера занятости)', ['Ишлаб чикариш', 'Савдо', 'Банк сохаси', 'Харбий', 'Таълим сохаси', 'Логистика', 'Кишлок хужалиги', 'Медицина сохаси', 'Курилиш сохаси', 'ЖКХ', 'Пенсионер', 'Бошка соха'])
+    with sub_col8:
+        occupation = st.selectbox('Лавозими (Должность)', ['Оддий ишчи', 'Юкори малакали мутхассис', 'Пенсионер/Студент', 'Бошлиг/Хужаин'])
+        
+    # Стаж и Месячный доход рядом
+    sub_col9, sub_col10 = st.columns(2)
+    with sub_col9:
+        exp_cat = st.selectbox('Иш тажрибаси (Стаж работы)', ['3 йилдан 5 гача', '5 йилдан зиёд', '1 йилдан 3 гача', '1 йилдан кам', 'Тажрибаси йук'])
+    with sub_col10:
+        income = st.number_input('Даромади (Месячный доход)', value=None, step=1, placeholder="Ойлик даромади")
     
     st.markdown("<h3 class='section-header'>💰 Кредит тафсилотлари (Детали кредита)</h3>", unsafe_allow_html=True)
-    region = st.selectbox('Худуд (Регион)', ["Andijon", "Farg'ona", "Marg'ilon", "Yangiqurg'on", "Namangan", "Uychi", "Chortoq", "Samarqand", "Qarshi"])
-    amount = st.number_input('Сумма (Сумма кредита)', value=None, step=1, placeholder="Товар нархи")
-    duration = st.number_input('Муддат (Срок в месяцах)', value=None, step=1, placeholder="Кредит муддати")
+    
+    # Регион, Сумма и Срок в три колонки рядом
+    sub_col11, sub_col12, sub_col13 = st.columns(3)
+    with sub_col11:
+        region = st.selectbox('Худуд (Регион)', ["Andijon", "Farg'ona", "Marg'ilon", "Yangiqurg'on", "Namangan", "Uychi", "Chortoq", "Samarqand", "Qarshi"])
+    with sub_col12:
+        amount = st.number_input('Сумма (Сумма кредита)', value=None, step=1, placeholder="Товар нархи")
+    with sub_col13:
+        duration = st.number_input('Муддат (Срок в месяцах)', value=None, step=1, placeholder="Кредит муддати")
 
 def authenticate_gspread():
     # Load Google Sheets API credentials from environment variable LINK
