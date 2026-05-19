@@ -250,20 +250,25 @@ def duplicate_to_gsheet(new_row):
         return
 
     try:
-        sh = gc.open("AslzarScoring")
-    except gspread.exceptions.SpreadsheetNotFound:
-        # Gracefully handle when spreadsheet is not found by creating a new one
+        # First, try to open the spreadsheet explicitly by your unique ID
+        sh = gc.open_by_key("1183_faZnS3i7hGqWITilgpZU6QGK8ZpVrzKy6jUvXxY")
+    except Exception:
+        # Fallback to opening by name if opening by ID fails
         try:
-            sh = gc.create("AslzarScoring")
-            # Share it with Behzod's email if possible
+            sh = gc.open("AslzarScoring")
+        except gspread.exceptions.SpreadsheetNotFound:
+            # Gracefully handle when spreadsheet is not found by creating a new one
             try:
-                sh.share('erifieder@gmail.com', perm_type='user', role='writer')
-            except Exception:
-                pass
-            st.info("ℹ️ Янги 'AslzarScoring' жадвали яратилди ва erifieder@gmail.com билан улашилди. (Создана новая таблица 'AslzarScoring')")
-        except Exception as create_err:
-            st.error(f"❌ Жадвални очиш ва яратишда хатолик: {create_err}")
-            return
+                sh = gc.create("AslzarScoring")
+                # Share it with Behzod's email if possible
+                try:
+                    sh.share('erifieder@gmail.com', perm_type='user', role='writer')
+                except Exception:
+                    pass
+                st.info("ℹ️ Янги 'AslzarScoring' жадвали яратилди ва erifieder@gmail.com билан улашилди. (Создана новая таблица 'AslzarScoring')")
+            except Exception as create_err:
+                st.error(f"❌ Жадвални очиш ва яратишда хатолик: {create_err}")
+                return
 
     try:
         # Select the worksheet
